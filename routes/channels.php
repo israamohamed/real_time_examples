@@ -20,3 +20,14 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('notifications', function ($user) {
     return $user ? true : false;
 });
+
+Broadcast::channel('chat' , function($user) {
+    if($user)
+    {
+        return ['id' => $user->id , 'name' => $user->name];
+    }
+});
+
+Broadcast::channel("chat.greet.{receiver}" , function($user , $receiver){
+    return $user->id === (int) $receiver ;
+});
