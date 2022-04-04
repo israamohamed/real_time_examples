@@ -24,10 +24,13 @@ class GreetingSent implements ShouldBroadcast
 
     public $message;
 
-    public function __construct(User $user , $message)
+    public $sender;
+
+    public function __construct(User $user , $message , $sender)
     {
         $this->user = $user;
         $this->message = $message;
+        $this->sender = $sender;
     }
 
     /**

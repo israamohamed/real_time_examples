@@ -5,6 +5,29 @@
    {
        cursor: pointer;
    }
+
+   .sender_message 
+    {
+        color: #71c7a0;
+        width: 90%;
+        padding: 6px 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        font-weight: bold;
+        clear: both;
+    }
+
+    .receiver_message 
+    {
+        color: #91aad1;
+        width: 90%;
+        padding: 6px 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        font-weight: bold;
+        clear: both;
+        float: right;
+    }
 </style>
 @endpush
 
@@ -82,7 +105,9 @@
             element.parentNode.removeChild(element);
         } )
         .listen('NewMessage' , (e) => {
-            addMessage(e.user.name + ': ' + e.message);
+            let sender =  e.user.id == "{{auth()->user()->id}}" ? true : false;
+            
+            addMessage(e.user.name + ': ' + e.message , sender);
         });
        
 
@@ -102,18 +127,24 @@
         usersElement.appendChild(element);
     }
 
-    function addMessage(message , active = false)
+    function addMessage(message , sender = true)
     {
         let element = document.createElement('li');
 
         element.innerText = message;
 
-        element.classList.add('list-group-item' , 'list-group-item-success');
-        if(active)
+        //element.classList.add('list-group-item' , 'list-group-item-success');
+        if(sender)
         {
-            element.classList.add('active');
+            element.classList.add('sender_message');
+        }
+        else 
+        {
+            element.classList.add('receiver_message');
         }
         messagesElement.appendChild(element);
+
+        messagesElement.scrollTop = messagesElement.scrollHeight;
     }
 
 
@@ -124,6 +155,16 @@
     const messageElement     = document.getElementById("message");
 
     sendMessageElement.addEventListener('click' , (e) => {
+        e.preventDefault();
+
+        window.axios.post('chat/send_message' , {
+            message : messageElement.value
+        });
+
+        messageElement.value = "";
+    } );
+
+    messageElement.addEventListener('change' , (e) => {
         e.preventDefault();
 
         window.axios.post('chat/send_message' , {
@@ -145,7 +186,7 @@
 <script>
     Echo.private('chat.greet.{{auth()->user()->id}}')
         .listen('GreetingSent' , (e) => {
-            addMessage(e.message);
+            addMessage(e.message , e.sender);
         } );
 </script>
 @endpush

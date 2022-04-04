@@ -37,9 +37,9 @@ class ChatController extends Controller
         $sender = $request->user();
         $receiver = $user;
         //notify receiver 
-        broadcast(new GreetingSent($receiver ,  "{$request->user()->name} greeted you" ));
+        broadcast(new GreetingSent($receiver ,  "{$request->user()->name} greeted you" , false ));
         //notify sender 
-        broadcast(new GreetingSent($sender   ,  "You greeted {$receiver->name}" ));
+        broadcast(new GreetingSent($sender   ,  "You greeted {$receiver->name}" , true ));
 
         return "Greeting {$receiver->name} from {$sender->name}" ;
     }
